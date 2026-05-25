@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Season {
+  id        Int       @id @default(autoincrement())
+  number    Int       @unique
+  theme     String
+  startDate DateTime?
+  endDate   DateTime?
+  isActive  Boolean   @default(false)
+  albums    Album[]
+  createdAt DateTime  @default(now())
+}
+
+model Participant {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  scores    Score[]
+  reviews   Review[]
+  albums    Album[]  @relation("SubmittedBy")
+  createdAt DateTime @default(now())
+}
+
+model Album {
+  id            Int          @id @default(autoincrement())
+  season        Season       @relation(fields: [seasonId], references: [id])
+  seasonId      Int
+  artist        String
+  title         String
+  submittedBy   Participant? @relation("SubmittedBy", fields: [submittedById], references: [id])
+  submittedById Int?
+  coverUrl      String?
+  isWinner      Boolean      @default(false)
+  scores        Score[]
+  reviews       Review[]
+  createdAt     DateTime     @default(now())
+
+  @@unique([seasonId, artist, title])
+}
+
+model Score {
+  id            Int         @id @default(autoincrement())
+  album         Album       @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  albumId       Int
+  participant   Participant @relation(fields: [participantId], references: [id])
+  participantId Int
+  value         Float
+  createdAt     DateTime    @default(now())
+
+  @@unique([albumId, participantId])
+}
+
+model Review {
+  id            Int         @id @default(autoincrement())
+  album         Album       @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  albumId       Int
+  participant   Participant @relation(fields: [participantId], references: [id])
+  participantId Int
+  text          String
+  createdAt     DateTime    @default(now())
+
+  @@unique([albumId, participantId])
+}

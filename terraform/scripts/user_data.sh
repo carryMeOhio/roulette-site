@@ -19,14 +19,23 @@ echo "=== [1/8] Updating system packages ==="
 apt-get update -y
 DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
 
+# 2 GB swap — `next build` can exhaust the 2 GB RAM on t4g.small without it
+if [ ! -f /swapfile ]; then
+  fallocate -l 2G /swapfile
+  chmod 600 /swapfile
+  mkswap /swapfile
+  swapon /swapfile
+  echo '/swapfile none swap sw 0 0' >> /etc/fstab
+fi
+
 echo "=== [2/8] Installing system dependencies ==="
 DEBIAN_FRONTEND=noninteractive apt-get install -y \
   curl git unzip jq \
   nginx certbot python3-certbot-nginx \
   postgresql postgresql-contrib
 
-echo "=== [3/8] Installing Node.js 20 ==="
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+echo "=== [3/8] Installing Node.js 22 ==="
+curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
 apt-get install -y nodejs
 
 echo "=== [4/8] Installing PM2 ==="

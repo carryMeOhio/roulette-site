@@ -39,7 +39,13 @@ variable "session_secret" {
 }
 
 variable "db_password" {
-  description = "PostgreSQL password for the 'roulette' database user (avoid single-quote characters)"
+  description = "PostgreSQL password for the 'roulette' database user"
   type        = string
   sensitive   = true
+
+  # ' breaks the SQL heredoc in user_data.sh; @ / ? # break the DATABASE_URL
+  validation {
+    condition     = length(var.db_password) >= 16 && !can(regex("['@/?#]", var.db_password))
+    error_message = "db_password must be at least 16 characters and must not contain ' @ / ? or #."
+  }
 }

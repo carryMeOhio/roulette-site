@@ -20,6 +20,9 @@ echo ""
 
 # ── Step 1: Pull latest code ───────────────────────────────────────────────────
 echo "--- [1/7] Pulling latest code ---"
+# Discard the sqlite→postgresql edit from the previous deploy (step 3 redoes it)
+# so the modified tracked file can't block the pull.
+git checkout -- prisma/schema.prisma 2>/dev/null || true
 git pull
 
 # ── Step 2: Copy .env ─────────────────────────────────────────────────────────

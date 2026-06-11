@@ -1,6 +1,7 @@
 # All secrets are stored as SecureString (encrypted at rest with the default aws/ssm KMS key).
-# Terraform writes these values to SSM — they are never stored as plaintext in .tfstate
-# because the Terraform AWS provider marks SecureString values as sensitive.
+# NOTE: Terraform state still contains these values in plaintext — "sensitive" only hides
+# them from CLI output. State is local and gitignored here; keep it that way (or use an
+# encrypted remote backend if you ever move state off this machine).
 
 resource "aws_ssm_parameter" "domain" {
   name  = "/${var.app_name}/domain"

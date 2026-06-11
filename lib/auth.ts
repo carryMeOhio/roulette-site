@@ -1,20 +1,8 @@
 import { getIronSession, IronSession } from "iron-session";
 import { cookies } from "next/headers";
+import { sessionOptions, type SessionData } from "./session";
 
-export interface SessionData {
-  isAdmin?: boolean;
-}
-
-export const sessionOptions = {
-  password: process.env.SESSION_SECRET as string,
-  cookieName: "roulette-admin",
-  cookieOptions: {
-    secure: process.env.NODE_ENV === "production",
-    httpOnly: true,
-    sameSite: "lax" as const,
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-  },
-};
+export { sessionOptions, type SessionData };
 
 export async function getSession(): Promise<IronSession<SessionData>> {
   const cookieStore = await cookies();

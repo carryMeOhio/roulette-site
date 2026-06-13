@@ -69,6 +69,11 @@ npx prisma db push
 
 # ── Step 6: Build Next.js ─────────────────────────────────────────────────────
 echo "--- [6/7] Building Next.js ---"
+# On a 1 GB instance (t4g.micro) the old app process + PostgreSQL leave too little
+# RAM for the build, forcing heavy swapping. Pause the app during the build to free
+# ~150 MB; step 7 starts it again. This means a brief outage on each deploy — fine
+# for a low-traffic archive. Harmless on first deploy (process doesn't exist yet).
+pm2 stop roulette 2>/dev/null || true
 npm run build
 
 # ── Step 7: Start / restart PM2 ───────────────────────────────────────────────

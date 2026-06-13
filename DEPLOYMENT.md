@@ -115,14 +115,20 @@ This deletes everything including the database — back up first if needed:
 
 | Item | Price | Monthly |
 |---|---|---|
-| EC2 t4g.small (2 vCPU ARM, 2 GB) | ~$0.0192/hr | ~$14.00 |
+| EC2 t4g.micro (2 vCPU ARM, 1 GB) | ~$0.0096/hr | ~$7.00 |
 | EBS gp3 20 GB root volume | ~$0.095/GB-mo | ~$1.90 |
 | Public IPv4 (Elastic IP) | $0.005/hr | ~$3.65 |
 | SSM parameters (standard tier) | free | $0 |
 | Data transfer out (first 100 GB/mo free) | — | $0 |
-| **Total** | | **~$19.50** |
+| **Total** | | **~$12.50** |
 
-Ways to cut it:
-- **t4g.micro** (1 GB RAM + the 2 GB swap the bootstrap adds) halves the EC2 line to ~$7/mo — viable for this traffic level, builds just get slower.
+The default is **t4g.micro**. Steady-state serving fits in 1 GB; `next build` peaks
+above 1 GB and leans on the 2 GB swapfile (created by the bootstrap) plus `deploy.sh`
+pausing the app during the build — so deploys are slower and cause a brief outage,
+which is fine for a low-traffic archive.
+
+Other knobs:
+- **t4g.small** (2 GB) — change `instance_type` in `terraform/ec2.tf` for faster,
+  swap-free builds and no deploy-time outage. Adds ~$7/mo (~$19.50 total).
 - **1-year Compute Savings Plan / Reserved Instance** takes ~40% off the EC2 line.
 - New AWS accounts get free-tier credits that typically cover the first months entirely.

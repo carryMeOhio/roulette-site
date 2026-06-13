@@ -25,8 +25,12 @@ resource "aws_key_pair" "app" {
 }
 
 resource "aws_instance" "app" {
-  ami                    = data.aws_ami.ubuntu_arm64.id
-  instance_type          = "t4g.small" # 2 vCPU, 2 GB RAM — handles Next.js build fine
+  ami = data.aws_ami.ubuntu_arm64.id
+  # 2 vCPU, 1 GB RAM. Steady-state serving fits comfortably; `next build` peaks
+  # above 1 GB and relies on the 2 GB swapfile that user_data.sh creates, plus
+  # deploy.sh pausing the app during the build. Bump to t4g.small for faster,
+  # swap-free builds if deploy time becomes annoying.
+  instance_type          = "t4g.micro"
   key_name               = aws_key_pair.app.key_name
   subnet_id              = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.app.id]

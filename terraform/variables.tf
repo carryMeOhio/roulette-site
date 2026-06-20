@@ -49,3 +49,13 @@ variable "db_password" {
     error_message = "db_password must be at least 16 characters and must not contain ' @ / ? or #."
   }
 }
+
+variable "ssh_allowed_cidrs" {
+  description = "CIDR blocks allowed to reach SSH (port 22). Find your IP with `curl ifconfig.me` and pass [\"x.x.x.x/32\"]. Never use [\"0.0.0.0/0\"]."
+  type        = list(string)
+
+  validation {
+    condition     = length(var.ssh_allowed_cidrs) > 0 && !contains(var.ssh_allowed_cidrs, "0.0.0.0/0")
+    error_message = "ssh_allowed_cidrs must be non-empty and must not contain 0.0.0.0/0. Use SSM Session Manager if you need fallback access."
+  }
+}

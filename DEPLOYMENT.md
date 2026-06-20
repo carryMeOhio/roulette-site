@@ -35,6 +35,7 @@ Edit `terraform.tfvars`:
 | Variable | What to put there |
 |---|---|
 | `ssh_public_key` | output of `cat ~/.ssh/id_ed25519.pub` |
+| `ssh_allowed_cidrs` | CIDRs allowed on port 22 — your IP as `/32`. Find it with `curl ifconfig.me`. `0.0.0.0/0` is rejected. |
 | `domain_name` | your bare domain, e.g. `galas-roulette.com` |
 | `admin_password` | password for the site's /admin panel |
 | `session_secret` | output of `openssl rand -hex 32` |

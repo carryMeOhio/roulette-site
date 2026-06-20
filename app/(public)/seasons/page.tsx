@@ -36,7 +36,7 @@ export default async function SeasonsPage() {
                   <h2 className="font-semibold text-base leading-tight">{s.theme}</h2>
                 </div>
                 <span className="text-xs text-muted-foreground shrink-0 font-mono bg-muted px-2 py-0.5 rounded">
-                  {s._count.albums} альб.
+                  {s._count.albums} альбомів
                 </span>
               </div>
 

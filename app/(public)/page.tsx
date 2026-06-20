@@ -16,8 +16,7 @@ export default async function HomePage() {
       <section className="text-center py-10 space-y-3">
         <h1 className="text-4xl font-bold tracking-tight">Галас Музична Рулетка</h1>
         <p className="text-muted-foreground max-w-xl mx-auto text-base">
-          Друзі загадують альбоми анонімно, всі слухають, ставлять оцінки та пишуть рецензії.
-          Хто загадав найкращий альбом — переможець сезону.
+          Загадуємо альбоми, пишемо рецензії, визначаємо переможців!
         </p>
       </section>
 

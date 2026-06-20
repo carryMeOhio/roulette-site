@@ -26,7 +26,9 @@ git checkout -- prisma/schema.prisma 2>/dev/null || true
 git pull
 
 # ── Step 2: Copy .env ─────────────────────────────────────────────────────────
-echo "--- [2/7] Copying .env.production → .env.local ---"
+# Use .env (not .env.local): Next.js AND the Prisma CLI both auto-load .env,
+# but Prisma does NOT load .env.local — so `prisma db push` needs it here.
+echo "--- [2/7] Copying .env.production → .env ---"
 if [[ ! -f /home/ubuntu/.env.production ]]; then
   echo ""
   echo "ERROR: /home/ubuntu/.env.production not found."
@@ -35,7 +37,7 @@ if [[ ! -f /home/ubuntu/.env.production ]]; then
   echo ""
   exit 1
 fi
-cp /home/ubuntu/.env.production .env.local
+cp /home/ubuntu/.env.production .env
 
 # ── Step 3: Switch schema.prisma SQLite → PostgreSQL (idempotent) ──────────────
 echo "--- [3/7] Checking Prisma schema provider ---"

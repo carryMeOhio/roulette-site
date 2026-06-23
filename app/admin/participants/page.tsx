@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 interface Participant {
   id: number;
   name: string;
-  _count: { scores: number };
+  _count: { scores: number; reviews: number; albums: number };
 }
 
 export default function AdminParticipantsPage() {
@@ -17,6 +17,11 @@ export default function AdminParticipantsPage() {
   const [newName, setNewName] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  // Delete state
+  const [confirmingId, setConfirmingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [deleteError, setDeleteError] = useState("");
 
   async function load() {
     setLoading(true);
@@ -48,8 +53,22 @@ export default function AdminParticipantsPage() {
     setSaving(false);
   }
 
+  async function handleDelete(id: number) {
+    setDeletingId(id);
+    setDeleteError("");
+    const res = await fetch(`/api/participants/${id}`, { method: "DELETE" });
+    if (res.ok) {
+      setConfirmingId(null);
+      await load();
+    } else {
+      const data = await res.json().catch(() => ({}));
+      setDeleteError(data.error || "Не вдалося видалити");
+    }
+    setDeletingId(null);
+  }
+
   return (
-    <div className="space-y-8 max-w-xl">
+    <div className="space-y-8 max-w-2xl">
       <div>
         <h1 className="text-2xl font-bold">Учасники</h1>
         <p className="text-sm text-muted-foreground mt-1">
@@ -88,15 +107,61 @@ export default function AdminParticipantsPage() {
             <thead className="bg-muted/50">
               <tr>
                 <th className="text-left py-2 px-4 font-medium">Ім&apos;я</th>
-                <th className="text-right py-2 px-4 font-medium text-muted-foreground">Оцінок</th>
+                <th className="text-right py-2 px-4 font-medium text-muted-foreground w-20">Оцінок</th>
+                <th className="text-right py-2 px-4 font-medium text-muted-foreground w-20">Рецензій</th>
+                <th className="py-2 px-4 w-px"></th>
               </tr>
             </thead>
             <tbody>
               {participants.map((p) => (
-                <tr key={p.id} className="border-t">
+                <tr key={p.id} className="border-t align-middle">
                   <td className="py-2.5 px-4 font-medium">{p.name}</td>
                   <td className="py-2.5 px-4 text-right text-muted-foreground">
                     {p._count.scores}
+                  </td>
+                  <td className="py-2.5 px-4 text-right text-muted-foreground">
+                    {p._count.reviews}
+                  </td>
+                  <td className="py-2.5 px-4 text-right whitespace-nowrap">
+                    {confirmingId === p.id ? (
+                      <span className="inline-flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground hidden sm:inline">
+                          Видалити разом з {p._count.scores} оцінками
+                          {p._count.reviews > 0 && ` та ${p._count.reviews} рецензіями`}?
+                        </span>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="destructive"
+                          disabled={deletingId === p.id}
+                          onClick={() => handleDelete(p.id)}
+                        >
+                          {deletingId === p.id ? "…" : "Так, видалити"}
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          disabled={deletingId === p.id}
+                          onClick={() => setConfirmingId(null)}
+                        >
+                          Скасувати
+                        </Button>
+                      </span>
+                    ) : (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        className="text-destructive hover:text-destructive"
+                        onClick={() => {
+                          setConfirmingId(p.id);
+                          setDeleteError("");
+                        }}
+                      >
+                        Видалити
+                      </Button>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -104,6 +169,7 @@ export default function AdminParticipantsPage() {
           </table>
         )}
       </div>
+      {deleteError && <p className="text-sm text-destructive">{deleteError}</p>}
     </div>
   );
 }

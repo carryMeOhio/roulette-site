@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/auth";
 export async function GET() {
   const participants = await prisma.participant.findMany({
     orderBy: { name: "asc" },
-    include: { _count: { select: { scores: true } } },
+    include: { _count: { select: { scores: true, reviews: true, albums: true } } },
   });
   return Response.json(participants);
 }

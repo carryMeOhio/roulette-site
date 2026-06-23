@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getParticipantStats, getSeasonWinners, getTopAlbums, fmtScore } from "@/lib/queries";
 import { ScoreBadge } from "@/components/ScoreBadge";
 import { Badge } from "@/components/ui/badge";
+import { ParticipantLink } from "@/components/ParticipantLink";
 import { scoreColorClass } from "@/lib/score";
 
 export const metadata = { title: "Статистика | Галас Рулетка" };
@@ -55,7 +56,14 @@ export default async function StatsPage() {
                     )}
                   </td>
                   <td className="py-2.5 px-4 text-muted-foreground text-xs hidden md:table-cell">
-                    {row.winner?.submittedBy?.name ?? "—"}
+                    {row.winner?.submittedBy ? (
+                      <ParticipantLink
+                        id={row.winner.submittedBy.id}
+                        name={row.winner.submittedBy.name}
+                      />
+                    ) : (
+                      "—"
+                    )}
                   </td>
                   <td className="py-2.5 px-4 text-right">
                     {row.winner && <ScoreBadge score={row.winner.avg} />}
@@ -88,7 +96,9 @@ export default async function StatsPage() {
               {participants.map((p, i) => (
                 <tr key={p.id} className="border-t hover:bg-muted/20">
                   <td className="py-2.5 px-4 text-muted-foreground font-mono text-xs">{i + 1}</td>
-                  <td className="py-2.5 px-4 font-medium">{p.name}</td>
+                  <td className="py-2.5 px-4 font-medium">
+                    <ParticipantLink id={p.id} name={p.name} />
+                  </td>
                   <td className="py-2.5 px-4 text-right text-muted-foreground">{p.seasons}</td>
                   <td className="py-2.5 px-4 text-right text-muted-foreground">{p.total}</td>
                   <td className="py-2.5 px-4 text-right">

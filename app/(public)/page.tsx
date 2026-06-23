@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getGlobalStats, getTopAlbums, getAllSeasons, fmtScore } from "@/lib/queries";
 import { ScoreBadge } from "@/components/ScoreBadge";
 import { Badge } from "@/components/ui/badge";
+import { ParticipantLink } from "@/components/ParticipantLink";
 
 export default async function HomePage() {
   const [stats, topAlbums, seasons] = await Promise.all([
@@ -70,7 +71,14 @@ export default async function HomePage() {
                     </Link>
                   </td>
                   <td className="py-3 px-4 text-muted-foreground hidden sm:table-cell">
-                    {album.submittedBy?.name ?? "—"}
+                    {album.submittedBy ? (
+                      <ParticipantLink
+                        id={album.submittedBy.id}
+                        name={album.submittedBy.name}
+                      />
+                    ) : (
+                      "—"
+                    )}
                   </td>
                   <td className="py-3 px-4 text-right">
                     <ScoreBadge score={album.avg} />

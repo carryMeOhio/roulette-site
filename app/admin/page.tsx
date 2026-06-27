@@ -21,7 +21,7 @@ const sections = [
   {
     href: "/admin/albums",
     title: "Альбоми",
-    description: "Керувати альбомами, вказувати переможця та хто загадав",
+    description: "Керувати альбомами, вказувати переможця та хто загадав/ла",
   },
   {
     href: "/admin/scores",

@@ -46,7 +46,7 @@ export default async function HomePage() {
                 <th className="text-left py-2 px-4 w-8 text-muted-foreground font-medium">#</th>
                 <th className="text-left py-2 px-4 font-medium">Альбом</th>
                 <th className="text-left py-2 px-4 font-medium hidden sm:table-cell">Сезон</th>
-                <th className="text-left py-2 px-4 font-medium hidden sm:table-cell">Загадав</th>
+                <th className="text-left py-2 px-4 font-medium hidden sm:table-cell">Загадав/ла</th>
                 <th className="text-right py-2 px-4 font-medium">Оцінка</th>
               </tr>
             </thead>

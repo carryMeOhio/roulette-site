@@ -47,7 +47,7 @@ export default async function SeasonPage(props: { params: Promise<{ id: string }
               </Link>
               {w.submittedBy && (
                 <div className="text-xs text-amber-700">
-                  загадав:{" "}
+                  загадав/ла:{" "}
                   <ParticipantLink id={w.submittedBy.id} name={w.submittedBy.name} />
                 </div>
               )}
@@ -66,7 +66,7 @@ export default async function SeasonPage(props: { params: Promise<{ id: string }
               <tr>
                 <th className="text-left py-2 px-3 w-8 text-muted-foreground font-medium">#</th>
                 <th className="text-left py-2 px-3 font-medium">Альбом</th>
-                <th className="text-left py-2 px-3 font-medium hidden md:table-cell">Загадав</th>
+                <th className="text-left py-2 px-3 font-medium hidden md:table-cell">Загадав/ла</th>
                 <th className="text-right py-2 px-3 font-medium w-20">Оцінок</th>
                 <th className="text-right py-2 px-3 font-medium w-24">Середня</th>
               </tr>

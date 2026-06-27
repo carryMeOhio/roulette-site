@@ -33,7 +33,7 @@ export default async function StatsPage() {
                 <th className="text-left py-2 px-4 font-medium">Сезон</th>
                 <th className="text-left py-2 px-4 font-medium">Тема</th>
                 <th className="text-left py-2 px-4 font-medium">Альбом</th>
-                <th className="text-left py-2 px-4 font-medium hidden md:table-cell">Загадав</th>
+                <th className="text-left py-2 px-4 font-medium hidden md:table-cell">Загадав/ла</th>
                 <th className="text-right py-2 px-4 font-medium">Оцінка</th>
               </tr>
             </thead>

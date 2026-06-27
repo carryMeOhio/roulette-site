@@ -67,7 +67,7 @@ export default async function AlbumPage(props: { params: Promise<{ id: string }>
           </h1>
           {album.submittedBy && (
             <p className="text-sm text-muted-foreground">
-              Загадав:{" "}
+              Загадав/ла:{" "}
               <ParticipantLink
                 id={album.submittedBy.id}
                 name={album.submittedBy.name}

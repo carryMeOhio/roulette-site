@@ -29,7 +29,7 @@ export async function getTopAlbums(limit = 10) {
     include: {
       scores: { select: { value: true } },
       season: { select: { id: true, number: true, theme: true } },
-      submittedBy: { select: { name: true } },
+      submittedBy: { select: { id: true, name: true } },
     },
   });
 
@@ -51,7 +51,7 @@ export async function getAllSeasons() {
         where: { isWinner: true },
         include: {
           scores: { select: { value: true } },
-          submittedBy: { select: { name: true } },
+          submittedBy: { select: { id: true, name: true } },
         },
       },
     },
@@ -77,7 +77,7 @@ export async function getSeasonById(id: number) {
             include: { participant: { select: { id: true, name: true } } },
             orderBy: { value: "desc" },
           },
-          submittedBy: { select: { name: true } },
+          submittedBy: { select: { id: true, name: true } },
         },
       },
     },
@@ -111,13 +111,13 @@ export async function getAlbumById(id: number) {
     where: { id },
     include: {
       season: { select: { id: true, number: true, theme: true } },
-      submittedBy: { select: { name: true } },
+      submittedBy: { select: { id: true, name: true } },
       scores: {
-        include: { participant: { select: { name: true } } },
+        include: { participant: { select: { id: true, name: true } } },
         orderBy: { value: "desc" },
       },
       reviews: {
-        include: { participant: { select: { name: true } } },
+        include: { participant: { select: { id: true, name: true } } },
         orderBy: { createdAt: "asc" },
       },
     },
@@ -163,7 +163,7 @@ export async function getSeasonWinners() {
         where: { isWinner: true },
         include: {
           scores: { select: { value: true } },
-          submittedBy: { select: { name: true } },
+          submittedBy: { select: { id: true, name: true } },
         },
       },
     },
@@ -177,4 +177,57 @@ export async function getSeasonWinners() {
       ? { ...s.albums[0], avg: calcAvg(s.albums[0].scores) }
       : null,
   }));
+}
+
+// ─── participant detail ─────────────────────────────────────────────────────────
+
+export async function getParticipantById(id: number) {
+  const participant = await prisma.participant.findUnique({
+    where: { id },
+    include: {
+      // only need the season of each scored album to count participation
+      scores: { select: { album: { select: { seasonId: true } } } },
+      // albums this person submitted ("provided")
+      albums: {
+        include: {
+          season: { select: { id: true, number: true, theme: true } },
+          scores: { select: { value: true } },
+        },
+        orderBy: [{ seasonId: "asc" }, { title: "asc" }],
+      },
+      reviews: {
+        include: {
+          album: {
+            select: {
+              id: true,
+              artist: true,
+              title: true,
+              season: { select: { id: true, number: true, theme: true } },
+            },
+          },
+        },
+        orderBy: { createdAt: "asc" },
+      },
+    },
+  });
+
+  if (!participant) return null;
+
+  const seasonsParticipated = new Set(
+    participant.scores.map((s) => s.album.seasonId)
+  ).size;
+
+  const albums = participant.albums.map((a) => ({
+    ...a,
+    avg: calcAvg(a.scores),
+  }));
+
+  return {
+    id: participant.id,
+    name: participant.name,
+    seasonsParticipated,
+    scoreCount: participant.scores.length,
+    albums,
+    reviews: participant.reviews,
+  };
 }

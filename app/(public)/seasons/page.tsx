@@ -55,7 +55,7 @@ export default async function SeasonsPage() {
                     </div>
                     {s.winner.submittedBy && (
                       <div className="text-xs text-muted-foreground">
-                        загадав: {s.winner.submittedBy.name}
+                        загадав/ла: {s.winner.submittedBy.name}
                       </div>
                     )}
                   </div>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getAlbumById, calcAvg, fmtScore } from "@/lib/queries";
 import { ScoreBadge } from "@/components/ScoreBadge";
 import { Badge } from "@/components/ui/badge";
+import { ParticipantLink } from "@/components/ParticipantLink";
 import { scoreColorClass } from "@/lib/score";
 
 export default async function AlbumPage(props: { params: Promise<{ id: string }> }) {
@@ -66,7 +67,12 @@ export default async function AlbumPage(props: { params: Promise<{ id: string }>
           </h1>
           {album.submittedBy && (
             <p className="text-sm text-muted-foreground">
-              Загадав: <span className="font-medium text-foreground">{album.submittedBy.name}</span>
+              Загадав/ла:{" "}
+              <ParticipantLink
+                id={album.submittedBy.id}
+                name={album.submittedBy.name}
+                className="font-medium text-foreground"
+              />
             </p>
           )}
 
@@ -117,8 +123,13 @@ export default async function AlbumPage(props: { params: Promise<{ id: string }>
             </thead>
             <tbody>
               {album.scores.map((score) => (
-                <tr key={score.participant.name} className="border-t hover:bg-muted/20">
-                  <td className="py-2.5 px-4">{score.participant.name}</td>
+                <tr key={score.participant.id} className="border-t hover:bg-muted/20">
+                  <td className="py-2.5 px-4">
+                    <ParticipantLink
+                      id={score.participant.id}
+                      name={score.participant.name}
+                    />
+                  </td>
                   <td className="py-2.5 px-4 text-right">
                     <ScoreBadge score={score.value} />
                   </td>
@@ -149,7 +160,11 @@ export default async function AlbumPage(props: { params: Promise<{ id: string }>
             {album.reviews.map((review) => (
               <div key={review.id} className="rounded-lg border p-4 space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium text-sm">{review.participant.name}</span>
+                  <ParticipantLink
+                    id={review.participant.id}
+                    name={review.participant.name}
+                    className="font-medium text-sm"
+                  />
                   <span className="text-xs text-muted-foreground">
                     {review.createdAt.toLocaleDateString("uk-UA")}
                   </span>

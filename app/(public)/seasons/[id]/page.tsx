@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getSeasonById, fmtScore } from "@/lib/queries";
 import { ScoreBadge } from "@/components/ScoreBadge";
 import { Badge } from "@/components/ui/badge";
+import { ParticipantLink } from "@/components/ParticipantLink";
 
 export default async function SeasonPage(props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;
@@ -45,7 +46,10 @@ export default async function SeasonPage(props: { params: Promise<{ id: string }
                 {w.artist} — {w.title}
               </Link>
               {w.submittedBy && (
-                <div className="text-xs text-amber-700">загадав: {w.submittedBy.name}</div>
+                <div className="text-xs text-amber-700">
+                  загадав/ла:{" "}
+                  <ParticipantLink id={w.submittedBy.id} name={w.submittedBy.name} />
+                </div>
               )}
             </div>
             <ScoreBadge score={w.avg} size="lg" className="shrink-0" />
@@ -62,7 +66,7 @@ export default async function SeasonPage(props: { params: Promise<{ id: string }
               <tr>
                 <th className="text-left py-2 px-3 w-8 text-muted-foreground font-medium">#</th>
                 <th className="text-left py-2 px-3 font-medium">Альбом</th>
-                <th className="text-left py-2 px-3 font-medium hidden md:table-cell">Загадав</th>
+                <th className="text-left py-2 px-3 font-medium hidden md:table-cell">Загадав/ла</th>
                 <th className="text-right py-2 px-3 font-medium w-20">Оцінок</th>
                 <th className="text-right py-2 px-3 font-medium w-24">Середня</th>
               </tr>
@@ -91,7 +95,14 @@ export default async function SeasonPage(props: { params: Promise<{ id: string }
                     )}
                   </td>
                   <td className="py-2.5 px-3 text-muted-foreground text-xs hidden md:table-cell">
-                    {album.submittedBy?.name ?? "—"}
+                    {album.submittedBy ? (
+                      <ParticipantLink
+                        id={album.submittedBy.id}
+                        name={album.submittedBy.name}
+                      />
+                    ) : (
+                      "—"
+                    )}
                   </td>
                   <td className="py-2.5 px-3 text-right text-muted-foreground text-xs">
                     {album.scores.length}
@@ -125,7 +136,7 @@ export default async function SeasonPage(props: { params: Promise<{ id: string }
                     className="py-2 px-2 font-medium text-center min-w-16 max-w-20 truncate"
                     title={p.name}
                   >
-                    {p.name}
+                    <ParticipantLink id={p.id} name={p.name} />
                   </th>
                 ))}
                 <th className="py-2 px-3 font-medium text-right min-w-20 bg-muted/50">Сер.</th>

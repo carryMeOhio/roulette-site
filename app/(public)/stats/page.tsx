@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getParticipantStats, getSeasonWinners, getTopAlbums, fmtScore } from "@/lib/queries";
 import { ScoreBadge } from "@/components/ScoreBadge";
 import { Badge } from "@/components/ui/badge";
+import { ParticipantLink } from "@/components/ParticipantLink";
 import { scoreColorClass } from "@/lib/score";
 
 export const metadata = { title: "Статистика | Галас Рулетка" };
@@ -32,7 +33,7 @@ export default async function StatsPage() {
                 <th className="text-left py-2 px-4 font-medium">Сезон</th>
                 <th className="text-left py-2 px-4 font-medium">Тема</th>
                 <th className="text-left py-2 px-4 font-medium">Альбом</th>
-                <th className="text-left py-2 px-4 font-medium hidden md:table-cell">Загадав</th>
+                <th className="text-left py-2 px-4 font-medium hidden md:table-cell">Загадав/ла</th>
                 <th className="text-right py-2 px-4 font-medium">Оцінка</th>
               </tr>
             </thead>
@@ -55,7 +56,14 @@ export default async function StatsPage() {
                     )}
                   </td>
                   <td className="py-2.5 px-4 text-muted-foreground text-xs hidden md:table-cell">
-                    {row.winner?.submittedBy?.name ?? "—"}
+                    {row.winner?.submittedBy ? (
+                      <ParticipantLink
+                        id={row.winner.submittedBy.id}
+                        name={row.winner.submittedBy.name}
+                      />
+                    ) : (
+                      "—"
+                    )}
                   </td>
                   <td className="py-2.5 px-4 text-right">
                     {row.winner && <ScoreBadge score={row.winner.avg} />}
@@ -71,7 +79,7 @@ export default async function StatsPage() {
       <section>
         <h2 className="text-lg font-semibold mb-3">Учасники</h2>
         <p className="text-xs text-muted-foreground mb-3">
-          Відсортовано за середньою оцінкою яку людина <em>ставила</em> іншим альбомам
+          Відсортовано за середньою оцінкою яку людина ставила <em>іншим</em> альбомам
         </p>
         <div className="rounded-lg border overflow-hidden">
           <table className="w-full text-sm">
@@ -88,7 +96,9 @@ export default async function StatsPage() {
               {participants.map((p, i) => (
                 <tr key={p.id} className="border-t hover:bg-muted/20">
                   <td className="py-2.5 px-4 text-muted-foreground font-mono text-xs">{i + 1}</td>
-                  <td className="py-2.5 px-4 font-medium">{p.name}</td>
+                  <td className="py-2.5 px-4 font-medium">
+                    <ParticipantLink id={p.id} name={p.name} />
+                  </td>
                   <td className="py-2.5 px-4 text-right text-muted-foreground">{p.seasons}</td>
                   <td className="py-2.5 px-4 text-right text-muted-foreground">{p.total}</td>
                   <td className="py-2.5 px-4 text-right">

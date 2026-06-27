@@ -215,7 +215,7 @@ export default function AdminAlbumsPage() {
             <div className="grid grid-cols-2 gap-3 items-end">
               <div className="space-y-1">
                 <Label htmlFor="submitted-by" className="text-xs text-muted-foreground">
-                  Загадав
+                  Загадав/ла
                 </Label>
                 <select
                   id="submitted-by"
@@ -266,7 +266,7 @@ export default function AdminAlbumsPage() {
               <thead className="bg-muted/50">
                 <tr>
                   <th className="text-left py-2 px-3 font-medium">Виконавець / Альбом</th>
-                  <th className="text-left py-2 px-3 font-medium hidden md:table-cell">Загадав</th>
+                  <th className="text-left py-2 px-3 font-medium hidden md:table-cell">Загадав/ла</th>
                   <th className="text-center py-2 px-3 font-medium w-10">🏆</th>
                   <th className="w-32" />
                 </tr>

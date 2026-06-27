@@ -79,7 +79,7 @@ export default async function StatsPage() {
       <section>
         <h2 className="text-lg font-semibold mb-3">Учасники</h2>
         <p className="text-xs text-muted-foreground mb-3">
-          Відсортовано за середньою оцінкою яку людина <em>ставила</em> іншим альбомам
+          Відсортовано за середньою оцінкою яку людина ставила <em>іншим</em> альбомам
         </p>
         <div className="rounded-lg border overflow-hidden">
           <table className="w-full text-sm">

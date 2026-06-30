@@ -40,6 +40,24 @@ export async function getTopAlbums(limit = 10) {
     .slice(0, limit);
 }
 
+// ─── current album (in-progress season) ──────────────────────────────────────
+
+export async function getCurrentAlbum() {
+  const album = await prisma.album.findFirst({
+    where: { isCurrent: true },
+    include: {
+      season: { select: { id: true, number: true, theme: true } },
+      submittedBy: { select: { id: true, name: true } },
+      scores: {
+        include: { participant: { select: { id: true, name: true } } },
+        orderBy: { value: "desc" },
+      },
+    },
+  });
+  if (!album) return null;
+  return { ...album, avg: calcAvg(album.scores) };
+}
+
 // ─── seasons list ────────────────────────────────────────────────────────────
 
 export async function getAllSeasons() {

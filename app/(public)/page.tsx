@@ -1,18 +1,27 @@
 import Link from "next/link";
-import { getGlobalStats, getTopAlbums, getAllSeasons, fmtScore } from "@/lib/queries";
+import { getGlobalStats, getTopAlbums, getAllSeasons, getCurrentAlbum } from "@/lib/queries";
 import { ScoreBadge } from "@/components/ScoreBadge";
 import { Badge } from "@/components/ui/badge";
 import { ParticipantLink } from "@/components/ParticipantLink";
+import { CurrentAlbumHero } from "@/components/CurrentAlbumHero";
+
+// Refresh the static home page periodically so the live grades for the current
+// album stay fresh without requiring every score edit to revalidate "/".
+export const revalidate = 30;
 
 export default async function HomePage() {
-  const [stats, topAlbums, seasons] = await Promise.all([
+  const [stats, topAlbums, seasons, currentAlbum] = await Promise.all([
     getGlobalStats(),
     getTopAlbums(10),
     getAllSeasons(),
+    getCurrentAlbum(),
   ]);
 
   return (
     <div className="space-y-12">
+      {/* Current album (only while a season is in progress) */}
+      {currentAlbum && <CurrentAlbumHero album={currentAlbum} />}
+
       {/* Hero */}
       <section className="text-center py-10 space-y-3">
         <h1 className="text-4xl font-bold tracking-tight">Галас Музична Рулетка</h1>

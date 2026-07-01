@@ -13,6 +13,8 @@ interface Album {
   title: string;
   isWinner: boolean;
   coverUrl: string | null;
+  isCurrent: boolean;
+  currentUntil: string | null;
   submittedBy: { id: number; name: string } | null;
 }
 
@@ -48,6 +50,12 @@ export default function AdminAlbumsPage() {
   const [fetchingCoverId, setFetchingCoverId] = useState<number | null>(null);
   const [coverMsg, setCoverMsg] = useState<Record<number, string>>({});
 
+  // Current-album panel
+  const [pickAlbumId, setPickAlbumId] = useState("");
+  const [pickUntil, setPickUntil] = useState("");
+  const [savingCurrent, setSavingCurrent] = useState(false);
+  const [currentMsg, setCurrentMsg] = useState("");
+
   useEffect(() => {
     Promise.all([
       fetch("/api/seasons").then((r) => r.json()),
@@ -70,6 +78,14 @@ export default function AdminAlbumsPage() {
         setLoadingAlbums(false);
       });
   }, [selectedSeasonId]);
+
+  // Keep the current-album picker in sync with whatever is current in this season.
+  useEffect(() => {
+    const cur = albums.find((a) => a.isCurrent);
+    setPickAlbumId(cur ? String(cur.id) : "");
+    setPickUntil(cur?.currentUntil ? cur.currentUntil.slice(0, 10) : "");
+    setCurrentMsg("");
+  }, [albums]);
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
@@ -145,6 +161,38 @@ export default function AdminAlbumsPage() {
     setDeletingId(null);
     const data = await fetch(`/api/albums?seasonId=${selectedSeasonId}`).then((r) => r.json());
     setAlbums(data);
+  }
+
+  async function saveCurrent() {
+    if (!pickAlbumId) return;
+    setSavingCurrent(true);
+    setCurrentMsg("");
+    const res = await fetch("/api/current-album", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ albumId: Number(pickAlbumId), until: pickUntil || null }),
+    });
+    if (res.ok) {
+      const data = await fetch(`/api/albums?seasonId=${selectedSeasonId}`).then((r) => r.json());
+      setAlbums(data);
+      setCurrentMsg("Збережено ✓");
+    } else {
+      const d = await res.json().catch(() => ({}));
+      setCurrentMsg(d.error || "Помилка");
+    }
+    setSavingCurrent(false);
+  }
+
+  async function clearCurrent() {
+    setSavingCurrent(true);
+    setCurrentMsg("");
+    const res = await fetch("/api/current-album", { method: "DELETE" });
+    if (res.ok) {
+      const data = await fetch(`/api/albums?seasonId=${selectedSeasonId}`).then((r) => r.json());
+      setAlbums(data);
+      setCurrentMsg("Прибрано");
+    }
+    setSavingCurrent(false);
   }
 
   async function handleFetchCover(id: number) {
@@ -249,6 +297,83 @@ export default function AdminAlbumsPage() {
             </div>
           </form>
           {addError && <p className="text-sm text-destructive">{addError}</p>}
+        </div>
+      )}
+
+      {/* Current-album panel */}
+      {selectedSeasonId && albums.length > 0 && (
+        <div className="rounded-lg border p-4 space-y-3 bg-primary/5">
+          <h2 className="font-semibold text-sm">▶ Поточний альбом (показується на головній)</h2>
+          {(() => {
+            const cur = albums.find((a) => a.isCurrent);
+            return cur ? (
+              <p className="text-sm text-muted-foreground">
+                Зараз:{" "}
+                <span className="font-medium text-foreground">
+                  {cur.artist} — {cur.title}
+                </span>
+                {cur.currentUntil && (
+                  <> · до {new Date(cur.currentUntil).toLocaleDateString("uk-UA")}</>
+                )}
+              </p>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                У цьому сезоні поточний альбом не вибрано
+              </p>
+            );
+          })()}
+          <div className="grid sm:grid-cols-[1fr_auto_auto] gap-2 items-end">
+            <div className="space-y-1">
+              <Label htmlFor="current-album" className="text-xs text-muted-foreground">
+                Альбом
+              </Label>
+              <select
+                id="current-album"
+                value={pickAlbumId}
+                onChange={(e) => setPickAlbumId(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                <option value="">— вибрати —</option>
+                {albums.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.artist} — {a.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="current-until" className="text-xs text-muted-foreground">
+                Активний до
+              </Label>
+              <Input
+                id="current-until"
+                type="date"
+                value={pickUntil}
+                onChange={(e) => setPickUntil(e.target.value)}
+                className="h-10"
+              />
+            </div>
+            <Button onClick={saveCurrent} disabled={savingCurrent || !pickAlbumId}>
+              {savingCurrent ? "…" : "Зробити поточним"}
+            </Button>
+          </div>
+          <div className="flex items-center gap-3">
+            {albums.some((a) => a.isCurrent) && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="text-destructive hover:text-destructive"
+                onClick={clearCurrent}
+                disabled={savingCurrent}
+              >
+                Прибрати поточний
+              </Button>
+            )}
+            {currentMsg && (
+              <span className="text-xs text-muted-foreground">{currentMsg}</span>
+            )}
+          </div>
         </div>
       )}
 

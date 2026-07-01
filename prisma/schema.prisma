@@ -37,6 +37,10 @@ model Album {
   submittedById Int?
   coverUrl      String?
   isWinner      Boolean      @default(false)
+  // The album currently being listened to (shown on the home page). At most one
+  // album should have isCurrent = true; the set-current action enforces that.
+  isCurrent     Boolean      @default(false)
+  currentUntil  DateTime?
   scores        Score[]
   reviews       Review[]
   createdAt     DateTime     @default(now())

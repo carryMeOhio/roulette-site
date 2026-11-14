@@ -23,6 +23,8 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
   });
 
   revalidatePath("/");
+  revalidatePath("/seasons");
+  revalidatePath("/stats");
   revalidatePath(`/albums/${id}`);
   revalidatePath(`/seasons/${album.season.id}`);
   return Response.json(album);
@@ -34,9 +36,14 @@ export async function DELETE(_request: Request, props: { params: Promise<{ id: s
   }
 
   const { id } = await props.params;
-  await prisma.album.delete({ where: { id: Number(id) } });
+  const album = await prisma.album.delete({
+    where: { id: Number(id) },
+    include: { season: { select: { id: true } } },
+  });
 
   revalidatePath("/");
   revalidatePath("/seasons");
+  revalidatePath("/stats");
+  revalidatePath(`/seasons/${album.season.id}`);
   return Response.json({ ok: true });
 }

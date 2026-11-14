@@ -7,6 +7,10 @@ import { scoreColorClass } from "@/lib/score";
 
 export const metadata = { title: "Статистика | Галас Рулетка" };
 
+// Safety net: refresh at least once a minute so admin changes appear even if
+// a revalidatePath is ever missed.
+export const revalidate = 60;
+
 export default async function StatsPage() {
   const [participants, winners, topAlbums] = await Promise.all([
     getParticipantStats(),

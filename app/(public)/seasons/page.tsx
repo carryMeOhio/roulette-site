@@ -4,6 +4,10 @@ import { ScoreBadge } from "@/components/ScoreBadge";
 
 export const metadata = { title: "Сезони | Галас Рулетка" };
 
+// Safety net: refresh at least once a minute so admin changes (winners,
+// new seasons, dates) appear even if a revalidatePath is ever missed.
+export const revalidate = 60;
+
 function formatDateRange(start: Date | null, end: Date | null): string {
   if (!start || !end) return "";
   const fmt = (d: Date) =>

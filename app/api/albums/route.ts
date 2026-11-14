@@ -40,6 +40,7 @@ export async function POST(request: Request) {
 
   revalidatePath("/");
   revalidatePath("/seasons");
+  revalidatePath("/stats");
   revalidatePath(`/seasons/${seasonId}`);
   return Response.json(album, { status: 201 });
 }

@@ -24,14 +24,9 @@ const sections = [
     description: "Керувати альбомами, вказувати переможця та хто загадав/ла",
   },
   {
-    href: "/admin/scores",
-    title: "Оцінки",
-    description: "Вводити оцінки учасників для кожного альбому",
-  },
-  {
-    href: "/admin/reviews",
-    title: "Рецензії",
-    description: "Додавати та редагувати рецензії учасників",
+    href: "/admin/entries",
+    title: "Оцінки та рецензії",
+    description: "Вводити оцінки та рецензії учасників для кожного альбому",
   },
   {
     href: "/admin/participants",

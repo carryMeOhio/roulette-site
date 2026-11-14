@@ -55,6 +55,8 @@ export async function POST(request: Request) {
   }
 
   revalidatePath("/");
+  revalidatePath("/seasons");
+  revalidatePath("/stats");
   revalidatePath(`/albums/${albumId}`);
   if (album) revalidatePath(`/seasons/${album.seasonId}`);
 

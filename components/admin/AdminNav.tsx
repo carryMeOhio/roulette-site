@@ -8,8 +8,7 @@ const navLinks = [
   { href: "/admin", label: "Дашборд", exact: true },
   { href: "/admin/seasons", label: "Сезони" },
   { href: "/admin/albums", label: "Альбоми" },
-  { href: "/admin/scores", label: "Оцінки" },
-  { href: "/admin/reviews", label: "Рецензії" },
+  { href: "/admin/entries", label: "Оцінки та рецензії" },
   { href: "/admin/participants", label: "Учасники" },
 ];
 

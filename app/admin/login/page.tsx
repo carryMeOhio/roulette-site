@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +9,6 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -25,8 +23,12 @@ export default function AdminLoginPage() {
       });
 
       if (res.ok) {
-        router.push("/admin");
-        router.refresh();
+        // Full-page navigation so the browser sends the freshly-set session
+        // cookie through the auth proxy; a soft router.push can race the
+        // cookie (and router.refresh) and leave the user stuck on the login
+        // page until a full navigation occurs.
+        window.location.assign("/admin");
+        return;
       } else {
         const data = await res.json();
         setError(data.error || "Невірний пароль");
